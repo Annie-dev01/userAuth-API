@@ -7,12 +7,12 @@ const responses = require("../utils/responses");
 const signUp = async (payload) => {
     try {
         const foundEmail = await User.findOne({where: {email: payload.email} });
-        if(foundEmail) {
+        if(foundEmail!== null) {
             return responses.buildFailureResponse("Email already exists", 400) 
         }
 
-        const foundUsername = await User.findOne({ where: {username: payload.username }});
-        if(foundUsername) {
+        const foundUsername = await User.findOne({ where: {username: payload.userName }});
+        if(foundUsername!== null) {
             return responses.buildFailureResponse("Username already in use", 400) 
         }  
 
@@ -35,7 +35,7 @@ const signUp = async (payload) => {
 const login = async (payload) => {
     try {
         const foundUser = await User.findOne({email: payload.email});
-        if(!foundUser) {
+        if(foundUser === null) {
             return responses.buildFailureResponse("Invalid email address", 400) 
         }
 

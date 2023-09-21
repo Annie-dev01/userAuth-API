@@ -1,7 +1,7 @@
 const { Sequelize } = require('sequelize');
+require ("dotenv").config();
 
-// Passing the connection URI
-const sequelize = new Sequelize('postgres://zccvyjsd:lXE-lihi0hzZsAghLaA_RAopTmOKugWR@silly.db.elephantsql.com/zccvyjsd');
+const sequelize = new Sequelize('postgres://zccvyjsd:${process.env.SEQUELIZE_PASSWORD}@silly.db.elephantsql.com/zccvyjsd');
 
 const connectDB = async () => {
 try {
