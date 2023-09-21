@@ -7,14 +7,18 @@ const database = require('./config/database');
 
 
 dotenv.config();
-
 database.connectDB();
 
 const app = express();
+const corsOptions = {
+    origin: "*",
+    credentials: true,
+    optionSuccessStatus: 200,
+  };
 
 app.use(express.json())
 app.use(morgan('combined'))
-app.use(cors());
+app.use(cors(corsOptions));
 app.use('/users', require('./routes/users.routes'));
 app.use('/task', require('./routes/tasks.routes'));
 
