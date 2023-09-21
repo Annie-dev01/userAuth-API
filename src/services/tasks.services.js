@@ -1,85 +1,89 @@
 const Task = require('../models/tasks.model')
 const responses = require("../utils/responses");
 
-const createTask = async (payload) => {
-    try {
-      const newTask = await Task.create(payload);
-      console.log(newTask);
-      return responses.buildSuccessResponse("Task created successfully", 201, saveTask);
-    } catch (error) {
-      console.log(error);
-      return responses.buildFailureResponse("Failed to create task", 500);
-    };  
-}
 
-const getAllTasks = async (query) => {
+// Create a new task
+const createTask = async (req, res) => {
   try {
-    const tasks = await tasks.findAll(query);
-    return responses.buildSuccessResponse(
-      'Successfully fetched all tasks',
-      200,
-      tasks
-    );
+    const { title, description, dueDate } = req.body;
+    const task = await Task.create({
+      title,
+      description,
+      dueDate,
+    });
+    return responses.buildSuccessResponse('Task created successfully', 201, task);
   } catch (error) {
-    return responses.buildFailureResponse('Failed to fetch tasks', 500);
-  }
-}
-
-const getTask = async (taskId) => {
-  try {
-    const task = await Task.findByPk(taskId);
-
-    if (!task) {
-      return responses.buildFailureResponse('Task not found', 404);
-    }
-
-    return responses.buildSuccessResponse('Task retrieved successfully', 200, task);
-  } catch (error) {
-    console.log(error);
-    return responses.buildFailureResponse('Failed to retrieve task', 500);
+    console.error(error);
+    return responses.buildFailureResponse('Failed to create task', 500);
   }
 };
 
-const updateTask = async (taskId, payload) => {
+// Get all tasks
+const getAllTasks = async (req, res) => {
   try {
-    const task = await task.findByPk(taskId);
+    const tasks = await Task.findAll();
+    return responses.buildSuccessResponse('Successfully fetched all tasks', 200, tasks);
+  } catch (error) {
+    console.error(error);
+    return responses.buildFailureResponse('Failed to fetch tasks', 500);
+  }
+};
 
+// Get a single task by ID
+const getTaskById = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const task = await Task.findByPk(id);
     if (!task) {
       return responses.buildFailureResponse('Task not found', 404);
     }
-    await task.update(payload);
+    return responses.buildSuccessResponse('Task found', 200, task);
+  } catch (error) {
+    console.error(error);
+    return responses.buildFailureResponse('Failed to fetch task', 500);
+  }
+};
 
+// Update a task by ID
+const updateTask = async (req, res) => {
+  const { id } = req.params;
+  const { title, description, dueDate } = req.body;
+  try {
+    const task = await Task.findByPk(id);
+    if (!task) {
+      return responses.buildFailureResponse('Task not found', 404);
+    }
+    task.title = title;
+    task.description = description;
+    task.dueDate = dueDate;
+    await task.save();
     return responses.buildSuccessResponse('Task updated successfully', 200, task);
   } catch (error) {
-    console.log(error);
+    console.error(error);
     return responses.buildFailureResponse('Failed to update task', 500);
   }
 };
 
-
-const deleteTask = async (taskId) => {
+// Delete a task by ID
+const deleteTask = async (req, res) => {
+  const { id } = req.params;
   try {
-    const task = await task.findByPk(taskId);
-
+    const task = await Task.findByPk(id);
     if (!task) {
       return responses.buildFailureResponse('Task not found', 404);
     }
     await task.destroy();
-
-    return responses.buildSuccessResponse('Task deleted successfully', 204);
+    return responses.buildSuccessResponse('Task deleted successfully', 200, task);
   } catch (error) {
-    console.log(error);
+    console.error(error);
     return responses.buildFailureResponse('Failed to delete task', 500);
   }
 };
 
-
-
-  
 module.exports = {
-    createTask,
-    getAllTasks,
-    getTask,
-    updateTask,
-    deleteTask,
-}
+  createTask,
+  getAllTasks,
+  getTaskById,
+  updateTask,
+  deleteTask,
+};

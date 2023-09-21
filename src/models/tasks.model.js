@@ -1,20 +1,27 @@
-const { DataTypes } = require('sequelize');
+const { DataTypes, Model } = require('sequelize');
 const sequelize = require('../config/database');
 
-const Task = sequelize.sq.define('task', {
-  title: {
-    type: DataTypes.STRING,
-    allowNull: false,
+class Task extends Model {}
+
+Task.init(
+  {
+    title: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    description: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+    },
+    dueDate: {
+      type: DataTypes.DATE,
+      allowNull: true,
+    },
   },
-  description: {
-    type: DataTypes.STRING,
-    allowNull: false,
-    unique: true,
-  },
-  dueDate: {
-    type: DataTypes.STRING,
-    allowNull: false,
+  {
+    sequelize,
+    modelName: 'Task',
   }
-});
+);
 
 module.exports = Task;
